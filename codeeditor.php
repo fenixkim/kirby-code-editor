@@ -32,11 +32,12 @@ class CodeEditorField extends InputField {
     public static $assets = array(
         'js' => array(
             'codemirror-compressed-5.8.0.min.js',
-            'codeeditor.js',
+            'codeeditorfield.js',
         ),
         'css' => array(
             'codemirror-5.8.0.css',
-            'codeeditor.css',
+            'codemirror-theme-material-5.8.0.css',
+            'codeeditorfield.css',
         ),
     );
 
@@ -70,13 +71,13 @@ class CodeEditorField extends InputField {
     public function __construct()
     {
         // Load language files
-        $baseDir = __DIR__ . DS . self::LANG_DIR . DS;
-        $lang = panel()->language();
-        if(file_exists($baseDir . $lang . '.php')) {
-            $this->translation = include $baseDir . $lang . '.php';
-        } else {
-            $this->translation = include $baseDir . 'en.php';
-        }
+        // $baseDir = __DIR__ . DS . self::LANG_DIR . DS;
+        // $lang = panel()->language();
+        // if(file_exists($baseDir . $lang . '.php')) {
+        //     $this->translation = include $baseDir . $lang . '.php';
+        // } else {
+        //     $this->translation = include $baseDir . 'en.php';
+        // }
     }
 
     // /**
