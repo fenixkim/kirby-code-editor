@@ -37,9 +37,37 @@ class CodeEditorField extends InputField {
         'css' => array(
             'codemirror-5.8.0.css',
             'codemirror-theme-material-5.8.0.css',
+            'codemirror-theme-monokai-5.8.0.css',
             'codeeditorfield.css',
         ),
     );
+
+    /**
+     * Option: Language mode.
+     *
+     * @since 1.0.0
+     *
+     * @var string|null
+     */
+    protected $mode = 'text';
+
+    /**
+     * Option: Syntax theme.
+     *
+     * @since 1.0.0
+     *
+     * @var string
+     */
+    protected $theme = 'material';
+
+    /**
+     * Option: Editor height.
+     *
+     * @since 1.0.0
+     *
+     * @var string
+     */
+    protected $height = 'auto';
 
     /**
      * Translated strings
@@ -49,15 +77,6 @@ class CodeEditorField extends InputField {
      * @var array
      */
     protected $translation;
-
-    /**
-     * Default option values
-     *
-     * @since 1.2.0
-     *
-     * @var array
-     */
-    protected $defaultValues = array();
 
     /**************************************************************************\
     *                          GENERAL FIELD METHODS                           *
@@ -80,94 +99,72 @@ class CodeEditorField extends InputField {
         // }
     }
 
-    // /**
-    //  * Magic setter
-    //  *
-    //  * Set a fields property and apply default value if required.
-    //  *
-    //  * @since 1.1.0
-    //  *
-    //  * @param string $option
-    //  * @param mixed  $value
-    //  */
-    // public function __set($option, $value)
-    // {
-    //     /* Set given value */
-    //     $this->$option = $value;
-    //
-    //     /* Check if value is valid */
-    //     switch($option)
-    //     {
-    //         case 'toolbar':
-    //             $this->validateToolbarOption($value);
-    //             break;
-    //
-    //         case 'header1':
-    //         case 'header2':
-    //             $this->validateHeaderOption($option, $value);
-    //             break;
-    //
-    //         case 'tools':
-    //             $this->validateToolsOption($value);
-    //             break;
-    //     }
-    //
-    // }
+    /**
+     * Magic setter.
+     *
+     * Set a fields property and apply default value if required.
+     *
+     * @since 1.0.0
+     *
+     * @param string $option
+     * @param mixed  $value
+     */
+    public function __set($option, $value)
+    {
+        // Check if value is valid and apply sanitized value
+        switch ($option) {
+            case 'mode':
+                $this->$option = $this->sanitizeModeOption($value);
+                break;
 
-    // /**
-    //  * Validate "toolbar" option
-    //  *
-    //  * @since 1.3.0
-    //  *
-    //  * @param mixed $value
-    //  */
-    // protected function validateToolbarOption($value)
-    // {
-    //     $this->toolbar = !in_array($value, array('false', 'hide', 'no', false));
-    // }
+            case 'theme':
+                $this->$option = $this->sanitizeThemeOption($value);
+                break;
 
-    // /**
-    //  * Validate "headerX" option
-    //  *
-    //  * @since 1.3.0
-    //  *
-    //  * @param string $header
-    //  * @param array  $value
-    //  */
-    // protected function validateHeaderOption($header, $value)
-    // {
-    //     if(!in_array($value, $this->validHeaderValues))
-    //     {
-    //         $this->$header = $this->defaultValues[$header];
-    //     }
-    // }
+            case 'height':
+                $this->$option = $this->sanitizeHeightOption($value);
+                break;
+        }
+    }
 
-    // /**
-    //  * Validate "tools" option
-    //  *
-    //  * @since 1.3.0
-    //  *
-    //  * @param array $value
-    //  */
-    // protected function validateToolsOption($value)
-    // {
-    //     if(!is_array($value) or empty($value))
-    //     {
-    //         $this->tools = $this->defaultValues['tools'];
-    //     }
-    // }
+    /**
+     * Sanitize "mode" option.
+     *
+     * @since 1.0.0
+     *
+     * @param string
+     * @return string
+     */
+    protected function sanitizeModeOption($value)
+    {
+        return (in_array($value, array('css', 'javascript'))) ? $value : 'text';
+    }
 
-    // /**
-    //  * Convert result to markdown
-    //  *
-    //  * @since 1.0.0
-    //  *
-    //  * @return string
-    //  */
-    // public function result()
-    // {
-    //     return str_replace(array("\r\n", "\r"), "\n", parent::result());
-    // }
+    /**
+     * Sanitize "theme" option.
+     *
+     * @since 1.0.0
+     *
+     * @param string
+     * @return string
+     */
+    protected function sanitizeThemeOption($value)
+    {
+        return (in_array($value, array('material', 'monokai'))) ? $value : 'material';
+    }
+
+    /**
+     * Sanitize "height" option.
+     *
+     * @since 1.0.0
+     *
+     * @param string
+     * @return integer|string
+     */
+    protected function sanitizeHeightOption($value)
+    {
+        return (is_numeric($value)) ? $value : 'auto';
+    }
 
     /**************************************************************************\
     *                            PANEL FIELD MARKUP                            *
@@ -189,7 +186,10 @@ class CodeEditorField extends InputField {
         $input->removeAttr('value');
         $input->html($this->value() ?: false);
         $input->data(array(
-            'field'     => 'codeeditorfield',
+            'field'  => 'codeeditorfield',
+            'mode'   => $this->mode,
+            'theme'  => $this->theme,
+            'height' => $this->height,
         ));
 
         /**
@@ -202,8 +202,12 @@ class CodeEditorField extends InputField {
 
         // Set up wrapping element
         $wrapper = new Brick('div', false);
-        $wrapper->addClass('markdownfield-wrapper');
-        $wrapper->addClass('markdownfield-field-' . $this->name);
+        $wrapper->addClass('codeeditor-wrapper');
+        $wrapper->addClass('codeeditor-field-' . $this->name);
+
+        if ($this->height === 'auto') {
+            $wrapper->addClass('codeeditor-field-autoheight');
+        }
 
         return $wrapper->append($input);
     }

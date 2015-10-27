@@ -1,0 +1,4 @@
+.codeeditor-field-autoheight .CodeMirror {
+    height: auto;
+    min-height: 150px;
+}
