@@ -1,0 +1,10 @@
+/**
+ * FIX:
+ * Add a z-index to the panels "Save" button gradient to
+ * make it stay in front of the editor gutter.
+ */
+@media screen and (min-width: 50em) {
+    .mainbar .form .buttons {
+        z-index: 10;
+    }
+}

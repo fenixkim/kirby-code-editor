@@ -1,0 +1,23 @@
+/**
+ * CHANGE:
+ * Make the tooltip adapt to the panel style a bit better.
+ */
+.codeeditor-wrapper .ace_tooltip {
+    color: #ffffff;
+    background-color: #000000;
+    background-image: none;
+    border: 0 none;
+    border-radius: 2px;
+    box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.2);
+    padding: 0.5em 0.75em;
+}
+
+/**
+ * FIX:
+ * Override the panels font family definition to ensure the
+ * editor content is displayed with in monospace font.
+ */
+.codeeditor-wrapper .ace_line,
+.codeeditor-wrapper .ace_line span {
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace !important;
+}

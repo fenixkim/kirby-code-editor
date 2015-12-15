@@ -9,7 +9,7 @@
  */
 
 /**
- * Code Editor CodeMirror Wrapper
+ * Code Editor Field
  *
  * @since 1.0.0
  */
@@ -30,6 +30,10 @@ var CodeEditorField = function ($, $field) {
      */
     this.$field = $field;
 
+    this.$wrapper = this.$field.closest('.codeeditor-wrapper');
+
+    this.$editor = $(this.$field.data('editor'));
+
     /**
      * User defined codemirror options.
      *
@@ -38,7 +42,8 @@ var CodeEditorField = function ($, $field) {
     this.options = {
         mode: this.$field.data('mode'),
         theme: this.$field.data('theme'),
-        height: this.$field.data('height')
+        height: this.$field.data('height'),
+        requirePath: this.$field.data('require-path')
     };
 
     /**
@@ -46,7 +51,9 @@ var CodeEditorField = function ($, $field) {
      *
      * @since 1.0.0
      */
-    this.codemirror = null;
+    this.editor = null;
+
+    this.isFocused = false;
 
     /**
      * Initialization.
@@ -55,12 +62,19 @@ var CodeEditorField = function ($, $field) {
      */
     this.init = function () {
         // Initialize CodeMirror
-        self.initCodeMirror();
+        self.initEditor();
 
         // Add styles for custom, fixed height
-        if (self.options.height !== 'auto') {
-            self.initHeight();
-        }
+        // if (self.options.height !== 'auto') {
+        //     self.initHeight();
+        // }
+
+        // Set up change event handler
+        self.editor.on('change', self.updateStorage);
+
+        // Set up focus and blur event handlers
+        self.editor.on('focus', self.attachFocusStyles);
+        self.editor.on('blur', self.detachFocusStyles);
 
         /**
          * Observe when the field element is destroyed (=the user leaves the
@@ -68,12 +82,9 @@ var CodeEditorField = function ($, $field) {
          *
          * @since 1.0.0
          */
-        self.$field.bind('destroyed', function() {
-            self.deactivate();
-        });
-
-        // Refresh CodeMirror DOM
-        self.codemirror.refresh();
+        // self.$field.bind('destroyed', function() {
+        //     self.deactivate();
+        // });
     };
 
     /**
@@ -81,15 +92,23 @@ var CodeEditorField = function ($, $field) {
      *
      * @since 1.0.0
      */
-    this.initCodeMirror = function () {
-        self.codemirror = CodeMirror.fromTextArea(self.$field.get(0), {
-            mode: self.options.mode,
-            theme: self.options.theme,
-            indentUnit: 4,
-            lineWrapping: true,
-            lineNumbers: true,
-            viewportMargin: (self.options.height === 'auto') ? Infinity : 10
-        });
+    this.initEditor = function () {
+        ace.config.set('basePath', self.options.requirePath);
+
+        // Initialize editor
+        self.editor = ace.edit(self.$editor.get(0));
+        self.editor.setTheme('ace/theme/' + self.options.theme);
+        self.editor.session.setMode('ace/mode/' + self.options.mode);
+
+        self.editor.setOption('fontSize', '1em');
+
+        // Set height options
+        self.editor.setOption('minLines', 5);
+        if (self.options.height !== 'auto') {
+            self.editor.setOption('maxLines', self.options.height);
+        } else {
+            self.editor.setOption('maxLines', Infinity);
+        }
     };
 
     /**
@@ -108,6 +127,35 @@ var CodeEditorField = function ($, $field) {
      */
     this.deactivate = function () {
         self.codemirror.toTextArea();
+    };
+
+    /**
+     * Update storage textarea element.
+     *
+     * @since 1.0.0
+     */
+    this.updateStorage = function () {
+        self.$field.text(self.editor.getValue());
+    };
+
+    /**
+     * Add focus style classes to the editor wrapper.
+     *
+     * @since 1.0.0
+     */
+    this.attachFocusStyles = function () {
+        self.isFocused = true;
+        self.$wrapper.addClass('codeeditor-wrapper-focused');
+    };
+
+    /**
+     * Remove focus style classes from the editor wrapper.
+     *
+     * @since 1.0.0
+     */
+    this.detachFocusStyles = function () {
+        self.isFocused = false;
+        self.$wrapper.removeClass('codeeditor-wrapper-focused');
     };
 
     // Run initialization

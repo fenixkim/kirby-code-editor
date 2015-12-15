@@ -1,4 +1,18 @@
-.codeeditor-field-autoheight .CodeMirror {
-    height: auto;
-    min-height: 150px;
+.codeeditor-wrapper {
+    padding: 5px 0;
+    background: #fafafa;
+    border: 2px solid #ddd;
+}
+
+    .field-with-error .codeeditor-wrapper {
+        border-color: #b3000a;
+    }
+
+    .codeeditor-wrapper.codeeditor-wrapper-focused {
+        border-color: #8dae28;
+    }
+
+
+.codeeditor-wrapper > textarea {
+    display: none;
 }

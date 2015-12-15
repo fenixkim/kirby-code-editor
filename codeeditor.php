@@ -17,27 +17,20 @@
 class CodeEditorField extends InputField {
 
     /**
-     * Language files directory
+     * Define frontend assets.
      *
-     * @since 1.2.0
-     */
-    const LANG_DIR = 'languages';
-
-    /**
-     * Define frontend assets
+     * @since 1.0.0
      *
      * @var array
-     * @since 1.0.0
      */
     public static $assets = array(
         'js' => array(
-            'codemirror-compressed-5.8.0.min.js',
+            'ace/ace.js',
             'codeeditorfield.js',
         ),
         'css' => array(
-            'codemirror-5.8.0.css',
-            'codemirror-theme-material-5.8.0.css',
-            'codemirror-theme-monokai-5.8.0.css',
+            'panel-overrides.css',
+            'ace-overrides.css',
             'codeeditorfield.css',
         ),
     );
@@ -49,7 +42,7 @@ class CodeEditorField extends InputField {
      *
      * @var string|null
      */
-    protected $mode = 'text';
+    protected $mode = 'javascript';
 
     /**
      * Option: Syntax theme.
@@ -58,7 +51,7 @@ class CodeEditorField extends InputField {
      *
      * @var string
      */
-    protected $theme = 'material';
+    protected $theme = 'kirby';
 
     /**
      * Option: Editor height.
@@ -70,33 +63,34 @@ class CodeEditorField extends InputField {
     protected $height = 'auto';
 
     /**
-     * Translated strings
+     * Custom routes.
      *
-     * @since 1.2.0
+     * @since 1.0.0
      *
      * @var array
      */
-    protected $translation;
+    protected $routes = [
+        [
+            'pattern' => 'ace/require/(:any)',
+            'method'  => 'get',
+            'action'  => 'requireAceAsset',
+        ],
+    ];
 
     /**************************************************************************\
     *                          GENERAL FIELD METHODS                           *
     \**************************************************************************/
 
     /**
-     * Field setup.
+     * Return custom routes.
      *
      * @since 1.0.0
+     *
+     * @return array
      */
-    public function __construct()
+    public function routes()
     {
-        // Load language files
-        // $baseDir = __DIR__ . DS . self::LANG_DIR . DS;
-        // $lang = panel()->language();
-        // if(file_exists($baseDir . $lang . '.php')) {
-        //     $this->translation = include $baseDir . $lang . '.php';
-        // } else {
-        //     $this->translation = include $baseDir . 'en.php';
-        // }
+        return $this->routes;
     }
 
     /**
@@ -111,7 +105,7 @@ class CodeEditorField extends InputField {
      */
     public function __set($option, $value)
     {
-        // Check if value is valid and apply sanitized value
+        // Check if $option is valid and apply sanitized $value
         switch ($option) {
             case 'mode':
                 $this->$option = $this->sanitizeModeOption($value);
@@ -150,7 +144,7 @@ class CodeEditorField extends InputField {
      */
     protected function sanitizeThemeOption($value)
     {
-        return (in_array($value, array('material', 'monokai'))) ? $value : 'material';
+        return (in_array($value, array('kirby', 'monokai'))) ? $value : 'kirby';
     }
 
     /**
@@ -171,7 +165,7 @@ class CodeEditorField extends InputField {
     \**************************************************************************/
 
     /**
-     * Create input element
+     * Create input element.
      *
      * @since 1.0.0
      *
@@ -187,9 +181,11 @@ class CodeEditorField extends InputField {
         $input->html($this->value() ?: false);
         $input->data(array(
             'field'  => 'codeeditorfield',
+            'editor' => '#' . $this->id() . '-editor',
             'mode'   => $this->mode,
             'theme'  => $this->theme,
             'height' => $this->height,
+            'require-path' => purl($this->page(), 'field/' . $this->name() . '/codeeditor/ace/require'),
         ));
 
         /**
@@ -204,16 +200,21 @@ class CodeEditorField extends InputField {
         $wrapper = new Brick('div', false);
         $wrapper->addClass('codeeditor-wrapper');
         $wrapper->addClass('codeeditor-field-' . $this->name);
-
         if ($this->height === 'auto') {
             $wrapper->addClass('codeeditor-field-autoheight');
         }
 
-        return $wrapper->append($input);
+        // Set up code editor element
+        $editor = new Brick('div', false);
+        $editor->addClass('codeeditor-editor');
+        $editor->attr('id', $this->id() . '-editor');
+        $editor->append($this->value());
+
+        return $wrapper->append($input)->append($editor);
     }
 
     /**
-     * Create outer field element
+     * Create outer field element.
      *
      * @since 1.0.0
      *
@@ -223,25 +224,12 @@ class CodeEditorField extends InputField {
     {
         $element = parent::element();
         $element->addClass('field-with-codeeditor');
+
         return $element;
     }
 
     /**************************************************************************\
     *                                 HELPERS                                  *
     \**************************************************************************/
-
-    /**
-     * Return a translation from the internal translation storage
-     *
-     * @since 1.0.0
-     *
-     * @param  string $key
-     * @param  string $default
-     * @return string
-     */
-    public function lang($key, $default = '')
-    {
-        return (isset($this->translation[$key]) ? $this->translation[$key] : $default);
-    }
 
 }
