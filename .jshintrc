@@ -20,7 +20,6 @@
     "jquery"    : true,
 
     "globals"   : {
-        "ace"       : true,
-        "screenfull": true
+        "ace"       : true
     }
 }
