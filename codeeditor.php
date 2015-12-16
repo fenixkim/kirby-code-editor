@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Code Editor Field for Kirby 2
  *
@@ -17,10 +18,17 @@
 class CodeEditorField extends InputField {
 
     /**
+     * Path to Ace assets.
+     *
+     * @since 1.0.0
+     * @var string
+     */
+    const ACE_ASSETS_PATH = __DIR__ . DS . 'assets' . DS . 'js' . DS . 'ace' . DS;
+
+    /**
      * Define frontend assets.
      *
      * @since 1.0.0
-     *
      * @var array
      */
     public static $assets = array(
@@ -39,7 +47,6 @@ class CodeEditorField extends InputField {
      * Option: Language mode.
      *
      * @since 1.0.0
-     *
      * @var string|null
      */
     protected $mode = 'javascript';
@@ -48,7 +55,6 @@ class CodeEditorField extends InputField {
      * Option: Syntax theme.
      *
      * @since 1.0.0
-     *
      * @var string
      */
     protected $theme = 'kirby';
@@ -57,7 +63,6 @@ class CodeEditorField extends InputField {
      * Option: Editor height.
      *
      * @since 1.0.0
-     *
      * @var string
      */
     protected $height = 'auto';
@@ -66,7 +71,6 @@ class CodeEditorField extends InputField {
      * Custom routes.
      *
      * @since 1.0.0
-     *
      * @var array
      */
     protected $routes = [
@@ -131,7 +135,17 @@ class CodeEditorField extends InputField {
      */
     protected function sanitizeModeOption($value)
     {
-        return (in_array($value, array('css', 'javascript'))) ? $value : 'text';
+        // Check for safe mode names
+        if (V::match($value, '/^[a-z0-9_-]+$/i')) {
+
+            // Check if mode file exists
+            $path =  self::ACE_ASSETS_PATH . 'mode-' . $value . '.js';
+            if (F::exists($path)) {
+                return $value;
+            }
+        }
+
+        return 'text';
     }
 
     /**
@@ -144,7 +158,17 @@ class CodeEditorField extends InputField {
      */
     protected function sanitizeThemeOption($value)
     {
-        return (in_array($value, array('kirby', 'monokai'))) ? $value : 'kirby';
+        // Check for safe theme names
+        if (V::match($value, '/^[a-z0-9_-]+$/i')) {
+
+            // Check if theme file exists
+            $path =  self::ACE_ASSETS_PATH . 'theme-' . $value . '.js';
+            if (F::exists($path)) {
+                return $value;
+            }
+        }
+
+        return 'kirby';
     }
 
     /**
@@ -227,9 +251,4 @@ class CodeEditorField extends InputField {
 
         return $element;
     }
-
-    /**************************************************************************\
-    *                                 HELPERS                                  *
-    \**************************************************************************/
-
 }

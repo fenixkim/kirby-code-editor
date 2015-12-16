@@ -52,7 +52,7 @@ fields:
     title:
         label: Code Snippet Title
         type:  text
-    text:
+    code:
         label: Code
         type:  codeeditor
         mode:  javascript

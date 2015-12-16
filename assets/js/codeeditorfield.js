@@ -30,12 +30,22 @@ var CodeEditorField = function ($, $field) {
      */
     this.$field = $field;
 
+    /**
+     * Field wrapper element.
+     *
+     * @since 1.0.0
+     */
     this.$wrapper = this.$field.closest('.codeeditor-wrapper');
 
+    /**
+     * Base editor element.
+     *
+     * @since 1.0.0
+     */
     this.$editor = $(this.$field.data('editor'));
 
     /**
-     * User defined codemirror options.
+     * User defined and fixed ace options.
      *
      * @since 1.0.0
      */
@@ -47,12 +57,17 @@ var CodeEditorField = function ($, $field) {
     };
 
     /**
-     * CodeMirror instance.
+     * Ace instance.
      *
      * @since 1.0.0
      */
     this.editor = null;
 
+    /**
+     * Current focus state.
+     *
+     * @since 1.0.0
+     */
     this.isFocused = false;
 
     /**
@@ -61,13 +76,8 @@ var CodeEditorField = function ($, $field) {
      * @since 1.0.0
      */
     this.init = function () {
-        // Initialize CodeMirror
+        // Initialize editor
         self.initEditor();
-
-        // Add styles for custom, fixed height
-        // if (self.options.height !== 'auto') {
-        //     self.initHeight();
-        // }
 
         // Set up change event handler
         self.editor.on('change', self.updateStorage);
@@ -78,21 +88,23 @@ var CodeEditorField = function ($, $field) {
 
         /**
          * Observe when the field element is destroyed (=the user leaves the
-         * current view) and deactivate MirrorMark accordingly.
+         * current view) and deactivate the editor accordingly.
          *
          * @since 1.0.0
          */
-        // self.$field.bind('destroyed', function() {
-        //     self.deactivate();
-        // });
+        self.$field.bind('destroyed', function() {
+            self.deactivate();
+        });
     };
 
     /**
-     * Initialize CodeMirror.
+     * Initialize Ace editor.
      *
      * @since 1.0.0
      */
     this.initEditor = function () {
+
+        // Set our custom require path
         ace.config.set('basePath', self.options.requirePath);
 
         // Initialize editor
@@ -100,6 +112,7 @@ var CodeEditorField = function ($, $field) {
         self.editor.setTheme('ace/theme/' + self.options.theme);
         self.editor.session.setMode('ace/mode/' + self.options.mode);
 
+        // Adapt to the Panels font size
         self.editor.setOption('fontSize', '1em');
 
         // Set height options
@@ -112,21 +125,12 @@ var CodeEditorField = function ($, $field) {
     };
 
     /**
-     * Set the CodeMirror instance to a fixed size.
-     *
-     * @since 1.0.0
-     */
-    this.initHeight = function () {
-        self.$field.parent().find('.CodeMirror').css('height', self.options.height + 'px');
-    };
-
-    /**
      * Deactivate & destroy.
      *
      * @since 1.0.0
      */
     this.deactivate = function () {
-        self.codemirror.toTextArea();
+        self.editor.destroy();
     };
 
     /**
@@ -183,8 +187,7 @@ var CodeEditorField = function ($, $field) {
      *
      * This callback will fire for every Code Editor Field
      * on the current panel page.
-     *
-     * @see https://github.com/getkirby/panel/issues/228#issuecomment-58379016
+     * 
      * @since 1.0.0
      */
     $.fn.codeeditorfield = function() {
