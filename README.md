@@ -3,7 +3,7 @@
 **Based on [Ace](https://ace.c9.io).**
 
 [![Release](https://img.shields.io/github/release/jonasdoebertin/kirby-code-editor.svg)](https://github.com/jonasdoebertin/kirby-code-editor/releases)  [![Issues](https://img.shields.io/github/issues/jonasdoebertin/kirby-code-editor.svg)](https://github.com/jonasdoebertin/kirby-code-editor/issues) [![License](https://img.shields.io/badge/license-GPLv3-blue.svg)](https://raw.githubusercontent.com/jonasdoebertin/kirby-code-editor/master/LICENSE)
-[![Moral License](https://img.shields.io/badge/buy-moral_license-8dae28.svg)](https://gumroad.com/l/visualmarkdown)
+[![Moral License](https://img.shields.io/badge/buy-moral_license-8dae28.svg)](https://gumroad.com/l/codeeditor)
 
 A dead-simple code editor field for the [Kirby Panel](http://getkirby.com). Just drop in the plugin and you're good to go!
 
@@ -57,3 +57,39 @@ fields:
         type:  codeeditor
         mode:  javascript
 ```
+
+## Options
+
+### mode
+
+Set the syntax mode of the editor field. Currently supported modes are:
+
+* `coffee`
+* `css`
+* `html`
+* `javascript`
+* `json`
+* `less`
+* `markdown`
+* `php`
+* `plain_text`
+* `sass`
+* `scss`
+* `svg`
+* `text`
+* `xml`
+* `yaml`
+
+### theme
+
+Set the syntax theme of the editor field. By default there's only a single theme included, called `kirby`, which has been custom build to fit perfectly into the Panel.
+
+### height
+
+Set the editor fields (max) height. Define a number of lines the editor will show at most. If your content has more lines then you specified here, the editor will make it available through vertical scrolling. If you want make the editor adapt to your content you may set this option to `auto`.
+
+## Advanced
+
+### Using additional Ace syntax modes and themes
+
+Even though the underlying Ace Editor does support a lot of different syntax modes and themes, Kirby Code Editor only includes the most requested ones to reduce its overall weight. If you want to use any mode or theme that is not included by default, go over to the [ace-builds](https://github.com/ajaxorg/ace-builds/tree/master/src-min-noconflict) repository, choose your desired mode and theme files `mode-*.js` / `theme-*.js` and drop them into the fields `assets/js/ace` directory. Afterwards you can use them with the *mode* and *theme* option just like the included ones.
