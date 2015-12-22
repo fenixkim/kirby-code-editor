@@ -68,6 +68,14 @@ class CodeEditorField extends InputField {
     protected $height = 'auto';
 
     /**
+     * Option: Code folding.
+     *
+     * @since 1.0.0
+     * @var boolean
+     */
+    protected $folding = true;
+
+    /**
      * Custom routes.
      *
      * @since 1.0.0
@@ -121,6 +129,10 @@ class CodeEditorField extends InputField {
 
             case 'height':
                 $this->$option = $this->sanitizeHeightOption($value);
+                break;
+
+            case 'folding':
+                $this->$option = $this->sanitizeBooleanOption($value);
                 break;
         }
     }
@@ -184,6 +196,32 @@ class CodeEditorField extends InputField {
         return (is_numeric($value)) ? $value : 'auto';
     }
 
+    /**
+     * Sanitize a boolean option value.
+     *
+     * @since 1.0.0
+     * @param mixed    $value
+     * @param boolean    $default
+     * @return boolean
+     */
+    protected function sanititeBooleanOption($value, $default = true)
+    {
+        switch ($value) {
+            case 'no':
+            case 'false':
+            case false:
+                return false;
+
+            case 'yes':
+            case 'true':
+            case true:
+                return true;
+
+            default:
+                return $default;
+        }
+    }
+
     /**************************************************************************\
     *                            PANEL FIELD MARKUP                            *
     \**************************************************************************/
@@ -204,11 +242,12 @@ class CodeEditorField extends InputField {
         $input->removeAttr('value');
         $input->html($this->value() ?: false);
         $input->data(array(
-            'field'  => 'codeeditorfield',
-            'editor' => '#' . $this->id() . '-editor',
-            'mode'   => $this->mode,
-            'theme'  => $this->theme,
-            'height' => $this->height,
+            'field'        => 'codeeditorfield',
+            'editor'       => '#' . $this->id() . '-editor',
+            'mode'         => $this->mode,
+            'theme'        => $this->theme,
+            'height'       => $this->height,
+            'folding'      => $this->folding,
             'require-path' => purl($this->page(), 'field/' . $this->name() . '/codeeditor/ace/require'),
         ));
 

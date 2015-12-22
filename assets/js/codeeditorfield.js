@@ -50,9 +50,10 @@ var CodeEditorField = function ($, $field) {
      * @since 1.0.0
      */
     this.options = {
-        mode: this.$field.data('mode'),
-        theme: this.$field.data('theme'),
-        height: this.$field.data('height'),
+        mode:        this.$field.data('mode'),
+        theme:       this.$field.data('theme'),
+        height:      this.$field.data('height'),
+        folding:     this.$field.is('[data-folding]'),
         requirePath: this.$field.data('require-path')
     };
 
@@ -122,6 +123,9 @@ var CodeEditorField = function ($, $field) {
         } else {
             self.editor.setOption('maxLines', Infinity);
         }
+
+        // Set misc. options
+        self.editor.setOption('showFoldWidgets', self.options.folding);
     };
 
     /**
@@ -187,7 +191,7 @@ var CodeEditorField = function ($, $field) {
      *
      * This callback will fire for every Code Editor Field
      * on the current panel page.
-     * 
+     *
      * @since 1.0.0
      */
     $.fn.codeeditorfield = function() {
