@@ -1,5 +1,8 @@
 # Kirby Code Editor
 
+[![Kirby Code Editor](https://raw.githubusercontent.com/JonasDoebertin/kirby-code-editor/master/logo.png)](https://github.com/JonasDoebertin/kirby-code-editor/)
+
+
 **Based on [Ace](https://ace.c9.io).**
 
 [![Release](https://img.shields.io/github/release/jonasdoebertin/kirby-code-editor.svg)](https://github.com/jonasdoebertin/kirby-code-editor/releases)  [![Issues](https://img.shields.io/github/issues/jonasdoebertin/kirby-code-editor.svg)](https://github.com/jonasdoebertin/kirby-code-editor/issues) [![License](https://img.shields.io/badge/license-GPLv3-blue.svg)](https://raw.githubusercontent.com/jonasdoebertin/kirby-code-editor/master/LICENSE)
