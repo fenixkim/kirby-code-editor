@@ -15,15 +15,14 @@
  *
  * @since 1.0.0
  */
+
+/**
+ * Path to Ace assets.
+ */
+define('ACE_ASSETS_PATH', __DIR__ . DS . 'assets' . DS . 'js' . DS . 'ace' . DS);
+
 class CodeEditorField extends InputField {
 
-    /**
-     * Path to Ace assets.
-     *
-     * @since 1.0.0
-     * @var string
-     */
-    const ACE_ASSETS_PATH = __DIR__ . DS . 'assets' . DS . 'js' . DS . 'ace' . DS;
 
     /**
      * Define frontend assets.
@@ -151,7 +150,7 @@ class CodeEditorField extends InputField {
         if (V::match($value, '/^[a-z0-9_-]+$/i')) {
 
             // Check if mode file exists
-            $path =  self::ACE_ASSETS_PATH . 'mode-' . $value . '.js';
+            $path =  ACE_ASSETS_PATH . 'mode-' . $value . '.js';
             if (F::exists($path)) {
                 return $value;
             }
@@ -174,7 +173,7 @@ class CodeEditorField extends InputField {
         if (V::match($value, '/^[a-z0-9_-]+$/i')) {
 
             // Check if theme file exists
-            $path =  self::ACE_ASSETS_PATH . 'theme-' . $value . '.js';
+            $path =  ACE_ASSETS_PATH . 'theme-' . $value . '.js';
             if (F::exists($path)) {
                 return $value;
             }
